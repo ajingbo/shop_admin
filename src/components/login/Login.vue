@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 登录
-    <el-button type="primary">成功按钮</el-button> -->
+    <el-button type="primary">成功按钮</el-button>-->
 
     <!--
       el-form
@@ -15,83 +15,110 @@
 
       el-input
         v-model 实现双向数据绑定
-     -->
+    -->
 
-    <el-form label-position="top" :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+    <el-form
+      label-position="top"
+      :model="loginForm"
+      :rules="rules"
+      ref="loginForm"
+      class="loginForm"
+    >
       <el-form-item label="用户名" prop="username">
-        <el-input v-model="ruleForm.username"></el-input>
+        <el-input v-model="loginForm.username"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password">
-        <el-input v-model="ruleForm.password"></el-input>
+        <el-input v-model="loginForm.password"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
-        <el-button @click="resetForm('ruleForm')">重置</el-button>
+        <el-button type="primary" @click="submitForm">登录</el-button>
+        <el-button @click="resetForm">重置</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
+// 导入axios
+import axios from 'axios'
+
 export default {
   data() {
     return {
-      ruleForm: {
+      loginForm: {
         username: '',
         password: ''
       },
       rules: {
-        name: [
-          { required: true, message: '请输入活动名称', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-        ],
-        region: [
-          { required: true, message: '请选择活动区域', trigger: 'change' }
-        ],
-        date1: [
+        username: [
+          // required 是否为必填项
+          // message 当前规则校验失败时的提示
+          // trigger 表单验证的触发实际，blur表示失去焦点时触发
+          { required: true, message: '用户名为必填项', trigger: 'blur' },
+          // min 最小长度
+          // max 最大长度
           {
-            type: 'date',
-            required: true,
-            message: '请选择日期',
-            trigger: 'change'
+            min: 3,
+            max: 6,
+            message: '用户名长度在 3 到 6 个字符',
+            trigger: 'blur'
           }
         ],
-        date2: [
+        password: [
+          { required: true, message: '密码为必填项', trigger: 'blur' },
           {
-            type: 'date',
-            required: true,
-            message: '请选择时间',
-            trigger: 'change'
+            min: 3,
+            max: 6,
+            message: '密码长度在 3 到 6 个字符',
+            trigger: 'blur'
           }
-        ],
-        type: [
-          {
-            type: 'array',
-            required: true,
-            message: '请至少选择一个活动性质',
-            trigger: 'change'
-          }
-        ],
-        resource: [
-          { required: true, message: '请选择活动资源', trigger: 'change' }
-        ],
-        desc: [{ required: true, message: '请填写活动形式', trigger: 'blur' }]
+        ]
       }
     }
   },
   methods: {
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+    // 登录功能的实现
+    login() {
+      // 使用axios发送请求
+      axios
+        .post('http://localhost:8888/api/private/v1/login', this.loginForm)
+        .then(res => {
+          console.log(res)
+          // const data =  res.data.data
+          // const meta = res.data.meta
+
+          // es6中的解构 意思就是从res.data中取出属性data好人meta
+          const { data, meta } = res.data
+
+          if (meta.status === 200) {
+            localStorage.setItem('token', data.token)
+
+            this.$router.push('/home')
+          } else {
+            this.$message({
+              type: 'error',
+              message: meta.msg,
+              duration: 1000
+            })
+          }
+        })
+    },
+    submitForm() {
+      // ref用在组件中，就表示当前组件
+      // this.$refs.loginForm
+      this.$refs.loginForm.validate(valid => {
         if (valid) {
-          alert('submit!')
+          // alert('submit!')
+          // 成功 调用登录接口
+          this.login()
         } else {
           console.log('error submit!!')
           return false
         }
       })
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields()
+    resetForm() {
+      this.$refs.loginForm.resetFields()
     }
   }
 }
