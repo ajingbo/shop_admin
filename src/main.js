@@ -4,6 +4,9 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
+// 导入全局样式
+import '@/assets/index.css'
+
 // 导入elementui - js
 import ElementUI from 'element-ui'
 // 导入elementui - css
@@ -17,6 +20,8 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
+
+  // 注册App组件为当前实例的局部组件，然后才可以在template中使用该组件
   components: { App },
   template: '<App/>'
 })
