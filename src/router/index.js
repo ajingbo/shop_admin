@@ -5,13 +5,22 @@ import Router from 'vue-router'
 import Login from '@/components/login/Login'
 // 导入首页组件
 import Home from '@/components/home/Home'
+// 导入用户列表组件
+import Users from '@/components/users/Users'
 
 Vue.use(Router)
 
 const router = new Router({
   routes: [
-    { path: '/login', component: Login },
-    { path: '/home', component: Home }
+    {
+      path: '/login',
+      component: Login
+    },
+    {
+      path: '/home',
+      component: Home,
+      children: [{ path: 'users', component: Users }]
+    }
   ]
 })
 // 全局导航守卫

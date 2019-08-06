@@ -59,7 +59,6 @@ export default {
           { required: true, message: '用户名为必填项', trigger: 'blur' },
           // min 最小长度
           // max 最大长度
-
           {
             min: 3,
             max: 6,
