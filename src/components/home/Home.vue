@@ -1,5 +1,6 @@
 <template>
  <el-container class="home-wrapper">
+   <!-- ----------------头部------------------- -->
   <el-header>
     <el-row>
       <el-col :span="8" class="logo">
@@ -17,6 +18,7 @@
     </el-row>
   </el-header>
   <el-container>
+    <!-- -----------------侧边导航---------------- -->
     <el-aside width="200px">
       <!-- el-menu 表示菜单组件
           default-active当前激活菜单的index值
@@ -26,7 +28,7 @@
           index是惟一的，不能重复！！！ -->
       <el-menu
       :router="true"
-      default-active="2-1"
+      default-active="/home/users"
       class="el-menu-vertical-demo"
       @open="handleOpen"
       @close="handleClose"
@@ -50,11 +52,12 @@
 
         <el-submenu index="2">
           <template slot="title">
-            <i class="el-icon-localtion"></i>
-            <span>用户管理</span>
+            <i class="el-icon-location"></i>
+            <span>权限管理</span>
           </template>
 
-          <el-menu-item index="2-1">用户列表</el-menu-item>
+          <el-menu-item index="2-1">角色列表</el-menu-item>
+          <el-menu-item index="2-2">权限列表</el-menu-item>
         </el-submenu>
       </el-menu>
     </el-aside>
