@@ -212,8 +212,35 @@ export default {
   methods: {
     // 获取用户列表数据
     // curPage = 1 给参数添加默认值
-    getUserList(curPage = 1) {
-      this.$http
+
+    // 方法一：
+    // getUserList(curPage = 1) {
+    //   this.$http
+    //     .get('/users', {
+    //       params: {
+    //         // 当前页
+    //         pagenum: curPage,
+    //         // 每页展示多少数据
+    //         pagesize: 2,
+    //         // 查询条件
+    //         query: this.queryStr || ''
+    //       }
+    //     })
+    //     .then(res => {
+    //       console.log(res)
+    //       const { data, meta } = res.data
+    //       if (meta.status === 200) {
+    //         // 获取数据成功
+    //         this.userList = data.users
+    //         this.total = data.total
+    //         this.curPage = data.pagenum
+    //       }
+    //     })
+    // },
+
+    // 方法二：
+    async getUserList(curPage = 1) {
+      const res = await this.$http
         .get('/users', {
           params: {
             // 当前页
@@ -224,16 +251,14 @@ export default {
             query: this.queryStr || ''
           }
         })
-        .then(res => {
-          console.log(res)
-          const { data, meta } = res.data
-          if (meta.status === 200) {
-            // 获取数据成功
-            this.userList = data.users
-            this.total = data.total
-            this.curPage = data.pagenum
-          }
-        })
+      console.log(res)
+      const { data, meta } = res.data
+      if (meta.status === 200) {
+        // 获取数据成功
+        this.userList = data.users
+        this.total = data.total
+        this.curPage = data.pagenum
+      }
     },
     // 分页获取数据
     changePage(curPage) {
@@ -249,27 +274,25 @@ export default {
     },
 
     // 修改用户状态 启用禁用
-    changeUserState(id, curState) {
+    async changeUserState(id, curState) {
       // console.log(id, curState)
       // 发送请求
-      this.$http
+      const res = await this.$http
         .put(`/users/${id}/state/${curState}`)
-        .then(res => {
-          const { data, meta } = res.data
-          if (meta.status === 200) {
-            this.$message({
-              type: 'success',
-              message: data.mg_state === 0 ? '禁用成功' : '启用成功',
-              duration: 1000
-            })
-          } else {
-            this.$message({
-              type: 'error',
-              message: meta.msg,
-              duration: 1000
-            })
-          }
+      const { data, meta } = res.data
+      if (meta.status === 200) {
+        this.$message({
+          type: 'success',
+          message: data.mg_state === 0 ? '禁用成功' : '启用成功',
+          duration: 1000
         })
+      } else {
+        this.$message({
+          type: 'error',
+          message: meta.msg,
+          duration: 1000
+        })
+      }
     },
 
     // 展示用户添加对话框
