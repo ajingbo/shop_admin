@@ -28,29 +28,27 @@
           index是惟一的，不能重复！！！ -->
       <el-menu
       :router="true"
-      default-active="/home/users"
+      :default-active="$route.path.slice(1).split('-')[0]"
       class="el-menu-vertical-demo"
-      @open="handleOpen"
-      @close="handleClose"
       background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
-        <el-submenu index="1">
+        <el-submenu v-for="menu in menuList" :key="menu.id" :index="menu.path">
           <!-- template用来包裹一级菜单 内部指定菜单的图标和菜单名称
           如果要给菜单添加小图标 应该使用template来包裹整个内容 -->
           <template slot="title">
             <i class="el-icon-location"></i>
-            <span>用户管理</span>
+            <span>{{menu.authName}}</span>
           </template>
           <!-- 启用路由模式后，index就相当于 原来 router-link 中的to属性，用来指定导航的路径（哈希值） -->
             <!-- 可以使用 /home/users 或者 home/users -->
-          <el-menu-item index="/home/users">
+          <el-menu-item v-for="item in menu.children" :key="item.id" :index="item.path">
             <template slot="title">
               <i class="el-icon-menu"></i>
-              <span>用户列表</span>
+              <span>{{item.authName}}</span>
             </template>
           </el-menu-item>
         </el-submenu>
 
-        <el-submenu index="2">
+        <!-- <el-submenu index="2">
           <template slot="title">
             <i class="el-icon-location"></i>
             <span>权限管理</span>
@@ -68,12 +66,12 @@
               <span>权限列表</span>
             </template>
           </el-menu-item>
-        </el-submenu>
+        </el-submenu> -->
       </el-menu>
     </el-aside>
     <el-main>
       <!-- 子路由出口 -->
-      <router-view/>
+      <router-view></router-view>
     </el-main>
   </el-container>
 </el-container>
@@ -81,6 +79,11 @@
 
 <script>
 export default {
+  data() {
+    return {
+      menuList: []
+    }
+  },
   methods: {
     // 退出功能
     logout() {
@@ -114,6 +117,15 @@ export default {
     },
     handleClose(key, keyPath) {
       console.log('close', key, keyPath)
+    }
+  },
+  // 获取菜单列表
+  async created() {
+    const res = await this.$http.get('menus')
+    const {meta, data} = res.data
+    if (meta.status === 200) {
+      this.menuList = data
+      console.log(this.menuList)
     }
   }
 }

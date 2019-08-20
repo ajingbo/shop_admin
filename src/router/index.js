@@ -1,17 +1,23 @@
+/* eslint-disable standard/object-curly-even-spacing */
 import Vue from 'vue'
 import Router from 'vue-router'
 
 // 导入 Login 组件（注意，不要添加 .vue 后缀）
 import Login from '@/components/login/Login'
-// 导入首页组件
+// 导入首页Homes组件
 import Home from '@/components/home/Home'
-// 导入用户列表组件
+// 导入用户列表Users组件
 import Users from '@/components/users/Users'
-// 导入权限列表组件
+// 导入权限列表Rights组件
 import Rights from '@/components/rights/Rights'
-// 导入角色列表组件
+// 导入角色列表Roles组件
 import Roles from '@/components/roles/Roles'
-
+// 导入商品分类Categories.vue组件
+import Categories from '@/components/products/Categories'
+// 导入商品列表Goods.vue组件
+import Goods from '@/components/goods/Goods'
+// 导入商品添加Add.vue组件
+import Add from '@/components/add-goods/Add'
 Vue.use(Router)
 
 const router = new Router({
@@ -24,9 +30,12 @@ const router = new Router({
       path: '/home',
       component: Home,
       children: [
-        { path: 'users', component: Users },
-        { path: 'rights', component: Rights },
-        { path: 'roles', component: Roles }
+        { path: '/users', component: Users },
+        { path: '/rights', component: Rights },
+        { path: '/roles', component: Roles },
+        { path: '/categories', component: Categories },
+        { path: '/goods', component: Goods},
+        {path: '/goods-add', component: Add}
       ]
     }
   ]

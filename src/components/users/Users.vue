@@ -67,7 +67,7 @@
           <!-- 删除按钮 -->
           <el-button type="danger" plain size="mini" icon="el-icon-delete" @click="delUserById(scope.row.id)"></el-button>
           <!-- 分配角色按钮 -->
-          <el-button type="success" plain size="mini" icon="el-icon-check">分配角色</el-button>
+          <el-button type="success" plain size="mini" icon="el-icon-check" @click="showUserAssignDialog(scope.row)">分配角色</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -128,6 +128,30 @@
         <el-button type="primary" @click="editUser">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 分配角色对话框 -->
+    <el-dialog title="分配角色" :visible.sync="userAssignDialog">
+      <el-form :model="userAssignForm">
+        <el-form-item label="用户名" label-width="120px">
+          <el-input v-model="userAssignForm.username" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="角色列表" label-width="120px">
+          <el-select v-model="userAssignForm.rid" placeholder="请选择角色">
+            <el-option
+              v-for="item in options"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="userAssignDialog = false">取 消</el-button>
+        <el-button type="primary" @click="assignRole">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -204,8 +228,20 @@ export default {
             trigger: 'change'
           }
         ]
-      }
+      },
 
+      // 分配角色
+      userAssignDialog: false,
+      userAssignForm: {
+        // 用户id
+        id: '',
+        // 用户角色id
+        rid: '',
+        // 用户名
+        username: ''
+      },
+      // 角色列表
+      options: []
     }
   },
 
@@ -412,10 +448,56 @@ export default {
           return false
         }
       })
+    },
+
+    // 显示用户分配角色对话框
+    async showUserAssignDialog(curUser) {
+      this.userAssignDialog = true
+      this.userAssignForm.id = curUser.id
+      this.userAssignForm.username = curUser.username
+
+      // 发送请求 获取用户的角色id
+      // eslint-disable-next-line no-undef
+      const res = await this.$http.get(`users/${curUser.id}`)
+      const {meta, data} = res.data
+      if (meta.status === 200) {
+        if (data.rid === -1) {
+          this.userAssignForm.rid = ''
+        } else {
+          this.userAssignForm.rid = data.rid
+        }
+      }
+      // 获取角色列表数据
+      this.getRoleList()
+    },
+    // 下拉   获取角色列表数据
+    async getRoleList() {
+      const res = await this.$http.get('roles')
+      const {meta, data} = res.data
+      if (meta.status === 200) {
+        this.options = data
+      }
+    },
+    // 点击确定  分配用户的角色
+    async assignRole() {
+      if (!this.userAssignForm.rid) {
+        this.$message.error('请选择一个角色')
+        return
+      }
+      const res = await this.$http.put(`users/${this.userAssignForm.id}/role`, {
+        rid: this.userAssignForm.rid
+      })
+      const {meta} = res.data
+      if (meta.status === 200) {
+        // 隐藏分配模态框
+        this.userAssignDialog = false
+        // 重新渲染
+        this.getUserList()
+        // 提示信息
+        this.$message.success('分配角色成功')
+      }
     }
-
   }
-
 }
 </script>
 

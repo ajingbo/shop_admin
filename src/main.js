@@ -14,7 +14,21 @@ import 'element-ui/lib/theme-chalk/index.css'
 
 // 在main.js一次性导入axios
 import axios from 'axios'
+
+// 引入moment
+import moment from 'moment'
 // 将axios添加到vue的原型中，实例对象可以直接使用原型对象中的属性和方法。 所有组件都是vue的实例
+
+// 导入富文本编辑器
+import VueQuillEditor from 'vue-quill-editor'
+
+// 导入富文本编辑器的css
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+// 把富文本编辑器当成了vue插件 以后所有的组件都可以直接使用
+Vue.use(VueQuillEditor)
+
 Vue.prototype.$http = axios
 
 // 配置公共路径，配置好公共路径后，每次使用axios发送请求，只需要写当前接口的的路径（比如：/users）就可以了
@@ -48,6 +62,11 @@ axios.interceptors.response.use(function(response) {
 })
 // 安装插件
 Vue.use(ElementUI)
+
+// 定义过滤器 用于过滤时间
+Vue.filter('dateFilter', (input, format = 'YYYY-MM-DD HH:mm:ss') => {
+  return moment(input * 1000).format(format)
+})
 
 Vue.config.productionTip = false
 
